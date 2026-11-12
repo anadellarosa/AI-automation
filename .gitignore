@@ -1,0 +1,23 @@
+# Claves y credenciales: NUNCA al repositorio
+.env
+.env.*
+*.key
+*.pem
+*token*
+*secret*
+credentials*.json
+
+# Exportaciones de n8n sin revisar (solo se suben desde flujos/revisados)
+n8n-export-sin-revisar/
+
+# Borradores y temporales
+borradores/
+*.tmp
+*.bak
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
