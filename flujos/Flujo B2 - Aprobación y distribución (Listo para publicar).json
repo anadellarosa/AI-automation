@@ -1,0 +1,797 @@
+{
+  "name": "Flujo B2 - Aprobación y distribución (Listo para publicar)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "value": "appkFuQp1S5YX7D1I",
+          "mode": "id"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "tblzhhklAkvw89jD1",
+          "mode": "id"
+        },
+        "triggerField": "Última modificación",
+        "additionalFields": {
+          "fields": "Pieza ID,Estado,Aprobado,Formato,Textos generados,Última modificación,Datos a confirmar",
+          "formula": "AND({Aprobado}, {Estado}='Para revisar')"
+        }
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bc2900a0-7c12-43aa-a5fc-4fd5fa673f77",
+      "name": "Detectar pieza aprobada",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "rMuaVnBF3TeI5WnB",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "4fe215ae-dbaf-4025-9bd7-ce2bd689a130",
+              "leftValue": "={{ $json.fields['Textos generados'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "05868891-48af-4f11-ab7b-20d84762567b",
+              "leftValue": "={{ $json.fields['Textos generados'] }}",
+              "rightValue": "[DATO A CONFIRMAR",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "508365fa-866a-4af6-ae74-939395114d3a",
+              "leftValue": "={{ $json.fields['Datos a confirmar'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "49bb242d-dcb9-418f-8818-108912efb12d",
+      "name": "¿Texto completo?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appkFuQp1S5YX7D1I",
+          "mode": "list",
+          "cachedResultName": "Estudio Contable Cerro-Colombo · Contenido",
+          "cachedResultUrl": "https://airtable.com/appkFuQp1S5YX7D1I"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblzhhklAkvw89jD1",
+          "mode": "list",
+          "cachedResultName": "Calendario",
+          "cachedResultUrl": "https://airtable.com/appkFuQp1S5YX7D1I/tblzhhklAkvw89jD1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Estado": "Listo para publicar",
+            "Aprobado el": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Pieza ID",
+              "displayName": "Pieza ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cliente ID",
+              "displayName": "Cliente ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Formato",
+              "displayName": "Formato",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Carrusel",
+                  "value": "Carrusel"
+                },
+                {
+                  "name": "Placa",
+                  "value": "Placa"
+                },
+                {
+                  "name": "Historia",
+                  "value": "Historia"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Pilar",
+              "displayName": "Pilar",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tema",
+              "displayName": "Tema",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Idea semilla",
+              "displayName": "Idea semilla",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Generar",
+                  "value": "Generar"
+                },
+                {
+                  "name": "Generando",
+                  "value": "Generando"
+                },
+                {
+                  "name": "Para revisar",
+                  "value": "Para revisar"
+                },
+                {
+                  "name": "Revisión manual",
+                  "value": "Revisión manual"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                },
+                {
+                  "name": "Listo para publicar",
+                  "value": "Listo para publicar"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Textos generados",
+              "displayName": "Textos generados",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Texto original de la IA",
+              "displayName": "Texto original de la IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Requiere revisión técnica",
+              "displayName": "Requiere revisión técnica",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Puntos a verificar",
+              "displayName": "Puntos a verificar",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Datos a confirmar",
+              "displayName": "Datos a confirmar",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Aprobado",
+              "displayName": "Aprobado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generado el",
+              "displayName": "Generado el",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Aprobado el",
+              "displayName": "Aprobado el",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Última modificación",
+              "displayName": "Última modificación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Origen de la idea",
+              "displayName": "Origen de la idea",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "IA",
+                  "value": "IA"
+                },
+                {
+                  "name": "CM",
+                  "value": "CM"
+                },
+                {
+                  "name": "Contadora",
+                  "value": "Contadora"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Motivo de revision manual",
+              "displayName": "Motivo de revision manual",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "9a5fb39d-ef92-49ee-ac9d-1065d2f329f7",
+      "name": "Marcar como Listo para publicar",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "rMuaVnBF3TeI5WnB",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appkFuQp1S5YX7D1I",
+          "mode": "list",
+          "cachedResultName": "Estudio Contable Cerro-Colombo · Contenido",
+          "cachedResultUrl": "https://airtable.com/appkFuQp1S5YX7D1I"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblzhhklAkvw89jD1",
+          "mode": "list",
+          "cachedResultName": "Calendario",
+          "cachedResultUrl": "https://airtable.com/appkFuQp1S5YX7D1I/tblzhhklAkvw89jD1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Aprobado": false,
+            "id": "={{ $json.id }}",
+            "Motivo de revision manual": "Texto con [DATO A CONFIRMAR] sin completar o vacío",
+            "Estado": "Revisión manual"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Pieza ID",
+              "displayName": "Pieza ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cliente ID",
+              "displayName": "Cliente ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Formato",
+              "displayName": "Formato",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Carrusel",
+                  "value": "Carrusel"
+                },
+                {
+                  "name": "Placa",
+                  "value": "Placa"
+                },
+                {
+                  "name": "Historia",
+                  "value": "Historia"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Pilar",
+              "displayName": "Pilar",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tema",
+              "displayName": "Tema",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Idea semilla",
+              "displayName": "Idea semilla",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Generar",
+                  "value": "Generar"
+                },
+                {
+                  "name": "Generando",
+                  "value": "Generando"
+                },
+                {
+                  "name": "Para revisar",
+                  "value": "Para revisar"
+                },
+                {
+                  "name": "Revisión manual",
+                  "value": "Revisión manual"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                },
+                {
+                  "name": "Listo para publicar",
+                  "value": "Listo para publicar"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Textos generados",
+              "displayName": "Textos generados",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Texto original de la IA",
+              "displayName": "Texto original de la IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Requiere revisión técnica",
+              "displayName": "Requiere revisión técnica",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Puntos a verificar",
+              "displayName": "Puntos a verificar",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Datos a confirmar",
+              "displayName": "Datos a confirmar",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Aprobado",
+              "displayName": "Aprobado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Generado el",
+              "displayName": "Generado el",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Aprobado el",
+              "displayName": "Aprobado el",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Última modificación",
+              "displayName": "Última modificación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Origen de la idea",
+              "displayName": "Origen de la idea",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "IA",
+                  "value": "IA"
+                },
+                {
+                  "name": "CM",
+                  "value": "CM"
+                },
+                {
+                  "name": "Contadora",
+                  "value": "Contadora"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Motivo de revision manual",
+              "displayName": "Motivo de revision manual",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        96
+      ],
+      "id": "b59310ee-b857-465b-bb52-6cd7349feb79",
+      "name": "Devolver a Revisión manual",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "rMuaVnBF3TeI5WnB",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Detectar pieza aprobada": {
+      "main": [
+        [
+          {
+            "node": "¿Texto completo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Texto completo?": {
+      "main": [
+        [
+          {
+            "node": "Marcar como Listo para publicar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Devolver a Revisión manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "216dcd6f-b17f-4642-838e-b88b2cc15191",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "REDACTADO"
+  },
+  "nodeGroups": [],
+  "id": "1KJ3zp4eKkKl1o3r",
+  "tags": []
+}
