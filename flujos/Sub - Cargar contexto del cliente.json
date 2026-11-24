@@ -14,42 +14,11 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.3,
       "position": [
-        0,
-        0
+        -16,
+        -144
       ],
       "id": "e6b2e042-3752-4b52-80bf-257dfc949004",
       "name": "When Executed by Another Workflow"
-    },
-    {
-      "parameters": {
-        "url": "https://api.notion.com/v1/pages/3f27d640-d8de-8058-9455-ce23f37e53cd/markdown",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "notionApi",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Notion-Version",
-              "value": "2026-03-11"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.5,
-      "position": [
-        224,
-        0
-      ],
-      "id": "8a2f2d65-c010-44f0-8a09-e74cfccac1bb",
-      "name": "Traer ficha desde Notion",
-      "credentials": {
-        "notionApi": {
-          "id": "3erprUhpcnn6yhiG",
-          "name": "Notion account"
-        }
-      }
     },
     {
       "parameters": {
@@ -70,8 +39,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        448,
-        0
+        624,
+        -144
       ],
       "id": "7aec8ac3-ee72-4ae0-b2de-67bb5d5d9ee4",
       "name": "Traer kit de plantillas",
@@ -84,28 +53,56 @@
     },
     {
       "parameters": {
-        "url": "https://api.notion.com/v1/pages/3f27d640-d8de-8058-9455-ce23f37e53cd",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "notionApi",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
+        "jsCode": "const rag = $('Armar ficha desde la base de conocimiento').first().json;\nconst kit = $('Traer kit de plantillas').first().json;\n\nif (kit.truncated) {\n  throw new Error('Notion devolvió el kit de plantillas truncado: revisar la página antes de generar');\n}\n\nconst sinEmails = (s) =>\n  String(s || '').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}/g, '[email omitido]');\n\nreturn [{\n  json: {\n    cliente_id: rag.cliente_id,\n    entradas_rag: rag.entradas,\n    ficha: sinEmails(rag.ficha),\n    propiedades: '',\n    plantillas: sinEmails(kit.markdown),\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        -144
+      ],
+      "id": "54d60635-24f8-4c08-92d2-b28c6200363d",
+      "name": "Armar contexto del cliente"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "41a7d640-d8de-8131-95a2-000b066841a8",
+          "mode": "list",
+          "cachedResultName": "Base de conocimiento (RAG) — fichas de clientes",
+          "cachedResultUrl": "https://app.notion.com/p/41a7d640d8de81348e85e49edc4a5fb6"
+        },
+        "returnAll": true,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
             {
-              "name": "Notion-Version",
-              "value": "2026-03-11"
+              "key": "Cliente ID|select",
+              "condition": "equals",
+              "optionValue": "={{ $json.cliente_id }}"
+            },
+            {
+              "key": "Estado|select",
+              "condition": "equals",
+              "optionValue": "Verificada"
             }
           ]
         },
+        "simple": false,
         "options": {}
       },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.5,
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
       "position": [
-        672,
-        0
+        176,
+        -144
       ],
-      "id": "46610da7-8663-433c-a5cb-76a6331ff950",
-      "name": "Traer propiedades de la ficha",
+      "id": "aefef342-6873-4806-847c-f6d09cd1f4ed",
+      "name": "Consultar base de conocimiento (RAG)",
       "credentials": {
         "notionApi": {
           "id": "3erprUhpcnn6yhiG",
@@ -115,36 +112,33 @@
     },
     {
       "parameters": {
-        "jsCode": "const ficha = $('Traer ficha desde Notion').first().json;\nconst kit = $('Traer kit de plantillas').first().json;\nconst props = $('Traer propiedades de la ficha').first().json.properties || {};\nconst clienteId = $('When Executed by Another Workflow').first().json.cliente_id;\n\nif (ficha.truncated || kit.truncated) {\n  throw new Error('Notion devolvió contenido truncado: revisar la página antes de generar');\n}\n\nconst sinEmails = (s) =>\n  String(s || '').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}/g, '[email omitido]');\n\nconst aTexto = (p) => {\n  switch (p.type) {\n    case 'title': return p.title.map((t) => t.plain_text).join('');\n    case 'rich_text': return p.rich_text.map((t) => t.plain_text).join('');\n    case 'select': return p.select ? p.select.name : '';\n    case 'status': return p.status ? p.status.name : '';\n    case 'multi_select': return p.multi_select.map((o) => o.name).join(', ');\n    case 'url': return p.url || '';\n    case 'number': return p.number == null ? '' : String(p.number);\n    case 'date': return p.date ? p.date.start : '';\n    case 'checkbox': return p.checkbox ? 'sí' : 'no';\n    default: return ''; // email, teléfono, personas, relaciones: se descartan\n  }\n};\n\nconst lineas = [];\nfor (const [nombre, valor] of Object.entries(props)) {\n  if (/revisor/i.test(nombre)) continue;\n  const texto = aTexto(valor);\n  if (texto) lineas.push(`- ${nombre}: ${texto}`);\n}\n\nreturn [{\n  json: {\n    cliente_id: clienteId,\n    ficha: sinEmails(ficha.markdown),\n    propiedades: sinEmails(lineas.join('\\n')),\n    plantillas: sinEmails(kit.markdown),\n  },\n}];"
+        "jsCode": "const ORDEN = ['Propiedades','Servicio','Negocio','Equipo y contacto','Público','Objetivo','Tono','Restricción','Marca','Operación','Redes y línea base','Competencia','Producto','Arquetipo','FODA','Estrategia','Pilar','CTA','Ritmo','Decisión'];\n\nconst txt = (arr) => (Array.isArray(arr) ? arr.map((t) => t.plain_text || '').join('') : '');\n\nconst entradas = $input.all()\n  .map((i) => {\n    const p = i.json.properties || {};\n    return {\n      entrada: txt(p['Entrada'] && p['Entrada'].title),\n      capa: (p['Capa'] && p['Capa'].select && p['Capa'].select.name) || '',\n      categoria: (p['Categoría'] && p['Categoría'].select && p['Categoría'].select.name) || '',\n      contenido: txt(p['Contenido'] && p['Contenido'].rich_text),\n    };\n  })\n  .filter((e) => e.entrada && e.contenido);\n\nif (entradas.length === 0) {\n  throw new Error('La base de conocimiento no tiene entradas verificadas para este cliente');\n}\n\nconst clienteId = $('When Executed by Another Workflow').first().json.cliente_id;\n\nentradas.sort((a, b) => {\n  const d = ORDEN.indexOf(a.categoria) - ORDEN.indexOf(b.categoria);\n  return d !== 0 ? d : a.entrada.localeCompare(b.entrada, 'es');\n});\n\nconst ficha = entradas\n  .map((e) => `### ${e.entrada}\\n[${e.capa} · ${e.categoria}]\\n${e.contenido}`)\n  .join('\\n\\n');\n\nreturn [{ json: { cliente_id: clienteId, entradas: entradas.length, titulos: entradas.map((e) => e.entrada), ficha } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        896,
-        0
+        400,
+        -144
       ],
-      "id": "54d60635-24f8-4c08-92d2-b28c6200363d",
-      "name": "Armar contexto del cliente"
+      "id": "d60cae66-7967-4d22-8ec8-163541438949",
+      "name": "Armar ficha desde la base de conocimiento"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "cliente_id": "cerro-colombo"
+        }
+      }
+    ]
+  },
   "connections": {
     "When Executed by Another Workflow": {
       "main": [
         [
           {
-            "node": "Traer ficha desde Notion",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Traer ficha desde Notion": {
-      "main": [
-        [
-          {
-            "node": "Traer kit de plantillas",
+            "node": "Consultar base de conocimiento (RAG)",
             "type": "main",
             "index": 0
           }
@@ -155,18 +149,29 @@
       "main": [
         [
           {
-            "node": "Traer propiedades de la ficha",
+            "node": "Armar contexto del cliente",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Traer propiedades de la ficha": {
+    "Consultar base de conocimiento (RAG)": {
       "main": [
         [
           {
-            "node": "Armar contexto del cliente",
+            "node": "Armar ficha desde la base de conocimiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar ficha desde la base de conocimiento": {
+      "main": [
+        [
+          {
+            "node": "Traer kit de plantillas",
             "type": "main",
             "index": 0
           }
@@ -179,8 +184,9 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "ccf65aa3-1afd-4191-9484-b5d22cddb213",
+  "versionId": "dae5ba80-b55b-4671-8e23-5da9984f0838",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "REDACTADO"
   },
   "nodeGroups": [],

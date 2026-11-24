@@ -596,7 +596,8 @@
             "Tokens de caché (escritura)": "={{ $json.tokens_cache_escritura }}",
             "Tokens de caché (lectura)": "={{ $json.tokens_cache_lectura }}",
             "Tokens de salida": "={{ $json.tokens_salida }}",
-            "Costo estimado USD": "={{ $json.costo_usd }}"
+            "Costo estimado USD": "={{ $json.costo_usd }}",
+            "Aprobado": false
           },
           "matchingColumns": [
             "id"
@@ -808,7 +809,7 @@
               "display": true,
               "type": "boolean",
               "readOnly": false,
-              "removed": true
+              "removed": false
             },
             {
               "id": "Generado el",
@@ -2189,6 +2190,30 @@
           "name": "Airtable Personal Access Token account"
         }
       }
+    },
+    {
+      "parameters": {
+        "chatId": "REDACTADO",
+        "text": "=⚠️ Error en el Flujo B\nPieza: {{ $('Preparar registro de error').first().json.pieza_id }}\nEtapa: {{ $('Preparar registro de error').first().json.etapa }}\nMotivo: {{ $('Preparar registro de error').first().json.mensaje }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1920,
+        432
+      ],
+      "id": "af770586-e2f8-4f3d-83a3-e5156ddf7d4c",
+      "name": "Avisar error por Telegram",
+      "webhookId": "0ed567a0-215c-4dde-8188-bb6172b82b4e",
+      "credentials": {
+        "telegramApi": {
+          "id": "7vhr9agiSYYBStac",
+          "name": "Telegram - Avisos Cerro-Colombo"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -2341,6 +2366,17 @@
           }
         ]
       ]
+    },
+    "Registrar en Log errores": {
+      "main": [
+        [
+          {
+            "node": "Avisar error por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -2348,7 +2384,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "60c749e0-2a2c-4ad1-b3f9-319d0e20618d",
+  "versionId": "0c101934-0f8c-4aab-b5f5-31e5f768756d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "REDACTADO"

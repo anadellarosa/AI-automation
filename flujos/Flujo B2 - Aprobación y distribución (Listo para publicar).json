@@ -48,13 +48,13 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict",
+            "typeValidation": "loose",
             "version": 4
           },
           "conditions": [
             {
               "id": "4fe215ae-dbaf-4025-9bd7-ce2bd689a130",
-              "leftValue": "={{ $json.fields['Textos generados'] }}",
+              "leftValue": "={{ String($json.fields['Textos generados'] || '').trim() }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
@@ -64,7 +64,7 @@
             },
             {
               "id": "05868891-48af-4f11-ab7b-20d84762567b",
-              "leftValue": "={{ $json.fields['Textos generados'] }}",
+              "leftValue": "={{ String($json.fields['Textos generados'] || '').trim() }}",
               "rightValue": "[DATO A CONFIRMAR",
               "operator": {
                 "type": "string",
@@ -73,17 +73,18 @@
             },
             {
               "id": "508365fa-866a-4af6-ae74-939395114d3a",
-              "leftValue": "={{ $json.fields['Datos a confirmar'] }}",
+              "leftValue": "={{ String($json.fields['Datos a confirmar'] || '').trim() }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
-                "operation": "notEmpty",
+                "operation": "empty",
                 "singleValue": true
               }
             }
           ],
           "combinator": "and"
         },
+        "looseTypeValidation": true,
         "options": {}
       },
       "type": "n8n-nodes-base.if",
@@ -786,7 +787,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "216dcd6f-b17f-4642-838e-b88b2cc15191",
+  "versionId": "248973b7-3c89-42fb-9c5e-8a174ba160ff",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "REDACTADO"
